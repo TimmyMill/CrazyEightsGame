@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Gameplay {
-    public static Scanner in = new Scanner(System.in);
     public static ArrayList<Player> playersList;     /* Initiate an ArrayList to store players */
     public static ArrayList<Card> discard;            /* ArrayList for discarded cards */
     public static int cardChoice;
@@ -12,12 +11,12 @@ public class Gameplay {
     public static String winner;
     public static String currentTurn;
 
-
     /*
      * Method to start the game
      */
 
     public static ArrayList<Player> startGame() {
+        Scanner in = new Scanner(System.in);
         playersList = new ArrayList<>(); /* Create ArrayList of Players */
         discard = new ArrayList<>();     /* Create ArrayList to keep the cards that have been played */
 
@@ -62,6 +61,10 @@ public class Gameplay {
 
     public static void playerTurn() {
         Card startCard = Hand.deck.drawCard();
+        if (startCard.getRank() == 7) {
+            int wild = wildCard();
+            startCard.setSuit(wild);
+        }
         discard.add(startCard);
         for (Player p : playersList) {
             while (! p.getHand().isEmpty()) {
@@ -84,10 +87,11 @@ public class Gameplay {
         System.out.println("\nCurrent card:\n" + stockCard + "\n");
 
         int choice = playerMenu();
-        while (choice == 1){
+        while (choice == 1) {
             Card playerDraws = Hand.deck.drawCard();
             human.getHand().add(playerDraws);
-            System.out.println(human.getHand());
+            System.out.println(human.getName() + "\nHand: " + human.getHand());
+            System.out.println("\nCurrent card:\n" + stockCard + "\n");
             choice = playerMenu();
         }
         if (choice == 2) {
@@ -156,54 +160,52 @@ public class Gameplay {
          * Look through the first players hand
          * Find the element that corresponds to the user's choice
          */
-        for (Player p : playersList) {
-            if (p.getName().matches(currentTurn)) {
-                for (int i = 0; i < p.getHand().size(); i++)
+        for (Player p : playersList)
+        if (p.getName().matches(currentTurn))
+        for (int i = 0; i < p.getHand().size(); i++) {
+            if (cardChoice == (i + 1)) {
+                Card playerCard = p.getHand().get(i); /* Creates a reference to the card the player selected */
+                int r = playerCard.getRank();         /* Creates an int reference to the rank of the card the player selected */
+                int s = playerCard.getSuit();         /* Creates an int reference to the suit of the card the player selected */
+                int r1 = stockCard.getRank();         /* Creates an int reference to the rank of the stock card*/
+                int s1 = stockCard.getSuit();         /* Creates an int reference to the suit of the stock card*/
 
-                if (cardChoice == (i + 1)) {
-                    Card j = p.getHand().get(i);        /* Creates a reference to the card the player selected */
-                    int r = j.getRank();                /* Creates an int reference to the rank of the card the player selected */
-                    int s = j.getSuit();                /* Creates an int reference to the suit of the card the player selected */
-                    int r1 = stockCard.getRank();       /* Creates an int reference to the rank of the stock card*/
-                    int s1 = stockCard.getSuit();       /* Creates an int reference to the suit of the stock card*/
-
-                    if (r == 7) {
-                        int wild = wildCard();          /* Use wildCard method */
-                        Card eight = new Card(wild, r); /* Create a new card using the wild value to change the suit to
+                if (r == 7) {
+                    int wild = wildCard();          /* Use wildCard method */
+                    Card eight = new Card(wild, r); /* Create a new card using the wild value to change the suit to
                                                      * player's selection and the rank of 8 */
-
-                        discard.add(eight);             /* Add the newly created card to the discard pile */
-                        p.getHand().remove(i);          /* Remove the card from the player's hand */
-                    }
-                    else if (r == r1 || s == s1) {
-                        System.out.println("Playing the " + p.getHand().get(i) + "\n");
-                        discard.add(p.getHand().get(i));
-                        p.getHand().remove(i);
-                    }
-                    else {
-                        System.out.println("You cannot play this card\n");
-                        if (p.getClass().getTypeName().contains("HumanPlayer")) {
-                            humanTurn();
-                        }
-                        else {
-                            computerTurn();
-                        }
+                    discard.add(eight);             /* Add the newly created card to the discard pile */
+                    p.getHand().remove(i);          /* Remove the card from the player's hand */
+                } else if (r == r1 || s == s1) {
+                    System.out.println("Playing the " + p.getHand().get(i) + "\n");
+                    discard.add(p.getHand().get(i));
+                    p.getHand().remove(i);
+                } else {
+                    System.out.println("You cannot play this card\n");
+                    if (p.getClass().getTypeName().contains("HumanPlayer")) {
+                        humanTurn();
+                    } else {
+                        computerTurn();
                     }
                 }
             }
         }
     }
 
+
+
+
     public static int wildCard() {
+        Scanner in = new Scanner(System.in);
         System.out.println("What suit would you like to change to?");
         System.out.println("(1) Clubs");
         System.out.println("(2) Diamonds");
         System.out.println("(3) Hearts");
         System.out.println("(4) Spades\n");
-        String str = in.next();
+        String str = in.nextLine();
         while ( ! str.matches("[1-4]")) {
             System.out.println("Invalid selection");
-            str = in.next();
+            str = in.nextLine();
         }
         int suitChange = Integer.parseInt(str);
         if (suitChange == 1) {
