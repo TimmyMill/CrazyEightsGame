@@ -11,7 +11,6 @@ public class Gameplay {
     public static Card stockCard;
     public static Card compChoice;
     public static String winner;
-    public static String currentTurn;
 
     /*
      * Method to start the game
@@ -106,8 +105,7 @@ public class Gameplay {
             }
             String str = in.nextLine();
             cardChoice = Integer.parseInt(str);
-            currentTurn = human.getName();
-            playCard();
+            humanPlayCard();
             /* Exit if hand empty */
             if (human.getHand().isEmpty()) {
                 winner = human.getName();
@@ -193,16 +191,17 @@ public class Gameplay {
      * Method to play a card
      */
 
-    public static void playCard() {
+    public static void humanPlayCard() {
         /*
          * Look through the first players hand
          * Find the element that corresponds to the user's choice
          */
-        for (Player p : playersList)
-        if (p.getName().matches(currentTurn))
-        for (int i = 0; i < p.getHand().size(); i++) {
+//        for (Player p : playersList)
+//        if (p.getName().matches(currentTurn))
+        Player human = playersList.get(0);
+        for (int i = 0; i < human.getHand().size(); i++) {
             if (cardChoice == (i + 1)) {
-                Card playerCard = p.getHand().get(i); /* Creates a reference to the card the player selected */
+                Card playerCard = human.getHand().get(i); /* Creates a reference to the card the player selected */
                 int r = playerCard.getRank();         /* Creates an int reference to the rank of the card the player selected */
                 int s = playerCard.getSuit();         /* Creates an int reference to the suit of the card the player selected */
                 int r1 = stockCard.getRank();         /* Creates an int reference to the rank of the stock card*/
@@ -213,22 +212,20 @@ public class Gameplay {
                     Card eight = new Card(wild, r); /* Create a new card using the wild value to change the suit to
                                                      * player's selection and the rank of 8 */
                     discard.add(eight);             /* Add the newly created card to the discard pile */
-                    p.getHand().remove(i);          /* Remove the card from the player's hand */
-                } else if (r == r1 || s == s1) {
-                    System.out.println("Playing the " + p.getHand().get(i) + "\n");
-                    discard.add(p.getHand().get(i));
-                    p.getHand().remove(i);
-                } else {
+                    human.getHand().remove(i);          /* Remove the card from the player's hand */
+                }
+                else if (r == r1 || s == s1) {
+                    System.out.println("Playing the " + human.getHand().get(i) + "\n");
+                    discard.add(human.getHand().get(i));
+                    human.getHand().remove(i);
+                }
+                else {
                     System.out.println("You cannot play this card\n");
-//                    if (p.getName().contains("Computer")) {
-//                        computerTurn();
-//                    } else {
                         humanTurn();
-                    }
                 }
             }
         }
-//    }
+    }
 
 
 
