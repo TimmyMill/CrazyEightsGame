@@ -182,10 +182,10 @@ public class Gameplay {
                     p.getHand().remove(i);
                 } else {
                     System.out.println("You cannot play this card\n");
-                    if (p.getClass().getTypeName().contains("HumanPlayer")) {
-                        humanTurn();
-                    } else {
+                    if (p.getName().contains("Computer")) {
                         computerTurn();
+                    } else {
+                        humanTurn();
                     }
                 }
             }
