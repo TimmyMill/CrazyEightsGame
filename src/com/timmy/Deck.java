@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Deck {
+
     private ArrayList<Card> cards; //initialize cards arrayList using the card class
 
     /*
-     * Create a deck of cards
+     * Create a gameDeck of cards
      */
 
     public Deck() {
         cards = new ArrayList<>();
 
         /*
-         * Fill the ArrayList with all of the cards to build a deck
+         * Fill the ArrayList with all of the cards to build a gameDeck
          */
 
         for (int a = 0; a <= 3; a++) {
@@ -22,7 +23,7 @@ public class Deck {
                 cards.add(new Card(a, b));
             }
         }
-        Collections.shuffle(cards); // shuffle the deck of cards
+        Collections.shuffle(cards); // shuffle the gameDeck of cards
     }
 
     /*
@@ -31,5 +32,6 @@ public class Deck {
 
     public Card drawCard() {return cards.remove(0);}
     public int deckSize() {return cards.size();}
+    public ArrayList<Card> getCards() {return cards;}
 }
 
