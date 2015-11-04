@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Hand {
+
     public static ArrayList<Card> hand;       /* ArrayList for each player's hand */
     public static Deck gameDeck = new Deck(); /* Create gameDeck object */
     static Card C;                            /* Create card Object */

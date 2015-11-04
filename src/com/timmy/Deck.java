@@ -34,4 +34,3 @@ public class Deck {
     public int deckSize() {return cards.size();}
     public ArrayList<Card> getCards() {return cards;}
 }
-
