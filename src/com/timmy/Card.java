@@ -18,6 +18,7 @@ public class Card {
         this.rank = rank;
         this.suit = suit;
     }
+
     /* Getters & Setters */
     public int getRank() {return rank;}
     public void setRank(int rank) {this.rank = rank;}
@@ -26,4 +27,8 @@ public class Card {
 
     @Override
     public String toString() {return ranks[rank] + " of " + suits[suit];}
+
 }
+//    implements Comparable<Card>
+//    @Override
+//    public int compareTo(Card card) {int compareSuit = card.getSuit();return this.suit-compareSuit;}

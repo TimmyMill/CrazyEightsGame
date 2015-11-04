@@ -91,9 +91,6 @@ public class Gameplay {
         while (choice == 1) {
             if (Hand.gameDeck.getCards().isEmpty()) {
                 Hand.reshuffleDeck();
-                // Collections.shuffle(discard);
-                // discard.addAll(Hand.gameDeck.getCards());
-                // copy(discard, Hand.gameDeck.getCards());
             }
             Card playerDraws = Hand.gameDeck.drawCard();
             human.getHand().add(playerDraws);
@@ -121,67 +118,6 @@ public class Gameplay {
             }
         }
     }
-    /*
-     * Computer Turn Method
-     */
-
-    public static void computerTurn() {
-        Player computer = playersList.get(1);
-        System.out.println(computer.getName() + "'s Turn");
-        System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
-        stockCard = discard.get(discard.size() - 1); /* Grabs the last element of the discard pile */
-        System.out.println("\nCurrent card:\n" + stockCard + "\n");
-        System.out.println(computer.getHand());
-        boolean needsCard = true;
-        /*
-         * Look through the computer's hand for any playable cards.
-         * If none are playable, draw cards until one can be played.
-         */
-        for (int i = 0; i < computer.getHand().size(); i++) {
-
-            if (computer.getHand().get(i).getRank() == stockCard.getRank() || computer.getHand().get(i).getSuit() == stockCard.getSuit()) {
-                compChoice = computer.getHand().get(i);
-                computerPlayCard();
-                needsCard = false;
-                System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
-                break;
-            }
-        }
-        if (needsCard) {
-            if (Hand.gameDeck.getCards().isEmpty()) {
-                Hand.reshuffleDeck();
-            }
-            Card c = Hand.gameDeck.drawCard();
-            computer.getHand().add(c);
-            computerTurn();
-            System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
-        }
-    }
-
-    public static void computerPlayCard() {
-        Random rand = new Random();
-        Player computer = playersList.get(1);
-        int r = compChoice.getRank();              /* Creates an int reference to the rank of the card the player selected */
-        int s = compChoice.getSuit();              /* Creates an int reference to the suit of the card the player selected */
-        int r1 = stockCard.getRank();              /* Creates an int reference to the rank of the stock card*/
-        int s1 = stockCard.getSuit();              /* Creates an int reference to the suit of the stock card*/
-        if (r == 7) {
-            int wild = rand.nextInt(4);             /* Use wildCard method */
-            Card eight = new Card(wild, r);        /* Create a new card using the wild value to change the suit to
-                                                    * player's selection and the rank of 8 */
-            discard.add(eight);                    /* Add the newly created card to the discard pile */
-            computer.getHand().remove(compChoice); /* Remove the card from the player's hand */
-        }
-        else if (r == r1 || s == s1) {
-            System.out.println("Playing the " + compChoice + "\n");
-            discard.add(compChoice);
-            computer.getHand().remove(compChoice);
-        }
-        else {
-            System.out.println("You cannot play this card\n");
-                computerTurn();
-        }
-    }
 
     /*
      * Method to play a card
@@ -196,11 +132,11 @@ public class Gameplay {
         Player human = playersList.get(0);
         for (int i = 0; i < human.getHand().size(); i++) {
             if (cardChoice == (i + 1)) {
-                Card playerCard = human.getHand().get(i); /* Creates a reference to the card the player selected */
-                int r = playerCard.getRank();             /* Creates an int reference to the rank of the card the player selected */
-                int s = playerCard.getSuit();             /* Creates an int reference to the suit of the card the player selected */
-                int r1 = stockCard.getRank();             /* Creates an int reference to the rank of the stock card*/
-                int s1 = stockCard.getSuit();             /* Creates an int reference to the suit of the stock card*/
+                Card playerCard = human.getHand().get(i); /* Reference to the card the player selected */
+                int r = playerCard.getRank();             /* Reference to the rank of the card the player selected */
+                int s = playerCard.getSuit();             /* Reference to the suit of the card the player selected */
+                int r1 = stockCard.getRank();             /* Reference to the rank of the stock card*/
+                int s1 = stockCard.getSuit();             /* Reference to the suit of the stock card*/
 
                 if (r == 7) {
                     int wild = wildCard();          /* Use wildCard method */
@@ -224,8 +160,89 @@ public class Gameplay {
         }
     }
 
+    /*
+     * Computer Turn Method
+     */
 
+    public static void computerTurn() {
+        Player computer = playersList.get(1);
+        System.out.println(computer.getName() + "'s Turn");
+        System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
+        stockCard = discard.get(discard.size() - 1); /* Grabs the last element of the discard pile */
+        System.out.println("\nCurrent card:\n" + stockCard + "\n");
+        System.out.println(computer.getHand());
 
+        boolean noMatches = true; /* Boolean value to use if there are no matches in the computer's hand */
+        boolean hasWild = false;  /* Boolean value to use if there are no matches but there is a wildcard */
+        int isWild = 0;           /* Int value to use if there is a wildcard
+
+        /* Look through the computer's hand for any playable cards. If there is a playable card, the boolean value of
+         * noMatches will be changed to false which will ignore the following if statement outside the for loop.
+         */
+
+        for (int i = 0; i < computer.getHand().size(); i++) {
+            if (computer.getHand().get(i).getRank() == stockCard.getRank() || computer.getHand().get(i).getSuit() == stockCard.getSuit()) {
+                compChoice = computer.getHand().get(i);
+                computerPlayCard();
+                noMatches = false;
+                System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
+                break;
+            }
+
+            /* If one of the cards is an '8', we will change the hasWild boolean value to true and set the isWild variable
+             * equal to the current iteration so that we can use it later to access that element if there are no other matches.
+             */
+
+            if (computer.getHand().get(i).getRank() == 7) {
+                hasWild = true;
+                isWild = i;
+            }
+        }
+
+        /* If there were no matches then we will first check to see if the computer has a wildcard.
+         * If there is no wildcard we will draw a card and start the computer's turn over again
+         */
+
+        if (noMatches) {
+
+            /* If there were no matches based on rank & suit, but there was a wildcard, then play the wildcard */
+            if (hasWild) {
+                compChoice = computer.getHand().get(isWild); // The isWild value is used here to access the last element that was an '8'
+                computerPlayCard();
+            }
+            else {
+                if (Hand.gameDeck.getCards().isEmpty()) { /* Check to see if the deck is empty before drawing a card */
+                    Hand.reshuffleDeck();                 /* If the deck is empty, use the reshuffleDeck method */
+                }
+                Card c = Hand.gameDeck.drawCard();
+                computer.getHand().add(c);
+                System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
+                computerTurn();
+            }
+        }
+    }
+
+    public static void computerPlayCard() {
+        Random rand = new Random();
+        Player computer = playersList.get(1);
+        int r = compChoice.getRank();         /* Reference to the rank of the card the player selected */
+        int s = compChoice.getSuit();         /* Reference to the suit of the card the player selected */
+        int r1 = stockCard.getRank();         /* Reference to the rank of the stock card*/
+        int s1 = stockCard.getSuit();         /* Reference to the suit of the stock card*/
+
+        if (r == 7) {
+            int wild = rand.nextInt(4);            /* Use wildCard method */
+            Card eight = new Card(wild, r);        /* Create a new card using the wild value to change the suit to
+                                                    * player's selection and the rank of 8 */
+            discard.add(eight);                    /* Add the newly created card to the discard pile */
+            computer.getHand().remove(compChoice); /* Remove the card from the player's hand */
+        }
+        if (r == r1 || s == s1) {
+            System.out.println("Playing the " + compChoice + "\n");
+            discard.add(compChoice);
+            computer.getHand().remove(compChoice);
+        }
+    }
 
     public static int wildCard() {
         Scanner in = new Scanner(System.in);
