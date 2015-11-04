@@ -22,9 +22,20 @@ public class Hand {
         return hand;
     }
 
+    /* If the gameDeck is empty and a player needs to draw a card,
+     * then we will reshuffle the discard pile and add it back to the gameDeck
+     */
+
     public static Deck reshuffleDeck() {
-        Collections.shuffle(Gameplay.discard);
-        gameDeck.getCards().addAll(Gameplay.discard);
+        Gameplay.stockCard = Gameplay.discard.remove(Gameplay.discard.size()-1);
+        /* References the last card played with the variable stockCard and then removes it from the discard pile */
+
+        Collections.shuffle(Gameplay.discard);        /* Shuffle the discard pile */
+        gameDeck.getCards().addAll(Gameplay.discard); /* Add everything from the discard pile to the gameDeck */
+        Gameplay.discard.clear();                     /* Clear everything in the discard pile */
+        Gameplay.discard.add(Gameplay.stockCard);     /* Add the stock card back to the discard pile */
         return gameDeck;
     }
 }
+//        Gameplay.stockCard = Gameplay.discard.get(Gameplay.discard.size() - 1); /* Grabs the last element of the discard pile */
+//        Gameplay.discard.remove(Gameplay.discard.size() -1);
