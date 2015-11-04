@@ -174,7 +174,9 @@ public class Gameplay {
 
         boolean noMatches = true; /* Boolean value to use if there are no matches in the computer's hand */
         boolean hasWild = false;  /* Boolean value to use if there are no matches but there is a wildcard */
-        int isWild = 0;           /* Int value to use if there is a wildcard
+        int isWild = 0;           /* Int value to use if there is a wildcard */
+
+        int suit = computerSuitCheck();
 
         /* Look through the computer's hand for any playable cards. If there is a playable card, the boolean value of
          * noMatches will be changed to false which will ignore the following if statement outside the for loop.
@@ -231,7 +233,7 @@ public class Gameplay {
         int s1 = stockCard.getSuit();         /* Reference to the suit of the stock card*/
 
         if (r == 7) {
-            int wild = rand.nextInt(4);            /* Use wildCard method */
+            int wild = computerSuitCheck();            /* Use wildCard method */
             Card eight = new Card(wild, r);        /* Create a new card using the wild value to change the suit to
                                                     * player's selection and the rank of 8 */
             discard.add(eight);                    /* Add the newly created card to the discard pile */
@@ -243,6 +245,60 @@ public class Gameplay {
             computer.getHand().remove(compChoice);
         }
     }
+    public static int computerSuitCheck() {
+        Player computer = playersList.get(1);
+        int clubs = 0;
+        int diamonds = 0;
+        int hearts = 0;
+        int spades = 0;
+        for (int i = 0; i < computer.getHand().size(); i++) {
+            switch (computer.getHand().get(i).getSuit()) {
+                case 0:
+                    clubs++; break;
+                case 1:
+                    diamonds++; break;
+                case 2:
+                    hearts++; break;
+                case 3:
+                    spades++; break;
+            }
+        }
+        int mostOf = Math.max(clubs, Math.max(diamonds, Math.max(hearts, spades)));
+        if (mostOf == clubs) mostOf = 0;
+        if (mostOf == diamonds) mostOf = 1;
+        if (mostOf == hearts) mostOf = 2;
+        if (mostOf == spades) mostOf = 3;
+        return mostOf;
+    }
+
+//    public static int computerSuitCheck() {
+//        Player computer = playersList.get(1);
+//        int clubs = 0;
+//        int diamonds = 0;
+//        int hearts = 0;
+//        int spades = 0;
+//        for (int i = 0; i < computer.getHand().size(); i++) {
+//            if (computer.getHand().get(i).getSuit() == 0) {
+//                clubs++;
+//            }
+//            if (computer.getHand().get(i).getSuit() == 1) {
+//                diamonds++;
+//            }
+//            if (computer.getHand().get(i).getSuit() == 2) {
+//                hearts++;
+//            }
+//            if (computer.getHand().get(i).getSuit() == 3) {
+//                spades++;
+//            }
+//        }
+//        int mostOf = Math.max(clubs, Math.max(diamonds, Math.max(hearts, spades)));
+//        if (mostOf == clubs) mostOf = 0;
+//        if (mostOf == diamonds) mostOf = 1;
+//        if (mostOf == hearts) mostOf = 2;
+//        if (mostOf == spades) mostOf = 3;
+//
+//        return mostOf;
+//    }
 
     public static int wildCard() {
         Scanner in = new Scanner(System.in);
