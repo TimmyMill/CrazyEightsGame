@@ -15,7 +15,7 @@ public class Hand {
 
     public static ArrayList<Card> dealHand() {
         hand = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 7; i++) {
             C = gameDeck.drawCard();
             hand.add(C);
         }
@@ -37,5 +37,3 @@ public class Hand {
         return gameDeck;
     }
 }
-//        Gameplay.stockCard = Gameplay.discard.get(Gameplay.discard.size() - 1); /* Grabs the last element of the discard pile */
-//        Gameplay.discard.remove(Gameplay.discard.size() -1);

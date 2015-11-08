@@ -1,16 +1,16 @@
 package com.timmy;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Gameplay {
     public static ArrayList<Player> playersList;     /* Initiate an ArrayList to store players */
     public static ArrayList<Card> discard;           /* ArrayList for discarded cards */
-    public static int cardChoice;
-    public static Card stockCard;
-    public static Card compChoice;
-    public static String winner;
+    public static int cardChoice;                    /* Reference to which card the player wants to play (refers to the element of the player's hand) */
+    public static Card stockCard;                    /* Reference to the current top card of the discard pile */
+    public static Card compChoice;                   /* Reference to which card the computer want to play */
+    public static String winner;                     /* Reference to the player that won the game's name */
+
     /*
      * Method to start the game
      */
@@ -37,6 +37,10 @@ public class Gameplay {
 
         return playersList;
     }
+
+    /*
+     * This method displays a menu for the player to choose an option from and returns their choice as an int
+     */
 
     public static int playerMenu() {
         /* Menu */
@@ -73,6 +77,7 @@ public class Gameplay {
             }
         }
     }
+
     /*
      * Human Turn Method
      */
@@ -85,8 +90,6 @@ public class Gameplay {
         stockCard = discard.get(discard.size() - 1); /* Grabs the last element of the discard pile */
         System.out.println("\nCurrent card:\n" + stockCard + "\n");
 
-        System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
-
         int choice = playerMenu();
         while (choice == 1) {
             if (Hand.gameDeck.getCards().isEmpty()) {
@@ -95,8 +98,6 @@ public class Gameplay {
             Card playerDraws = Hand.gameDeck.drawCard();
             human.getHand().add(playerDraws);
             System.out.println(human.getName() + "\nHand: " + human.getHand());
-
-            System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
 
             System.out.println("\nCurrent card:\n" + stockCard + "\n");
             choice = playerMenu();
@@ -120,7 +121,7 @@ public class Gameplay {
     }
 
     /*
-     * Method to play a card
+     * Method to play a player's card
      */
 
     public static void humanPlayCard() {
@@ -167,7 +168,6 @@ public class Gameplay {
     public static void computerTurn() {
         Player computer = playersList.get(1);
         System.out.println(computer.getName() + "'s Turn");
-        System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
         stockCard = discard.get(discard.size() - 1); /* Grabs the last element of the discard pile */
         System.out.println("\nCurrent card:\n" + stockCard + "\n");
         System.out.println(computer.getHand());
@@ -187,7 +187,10 @@ public class Gameplay {
                 compChoice = computer.getHand().get(i);
                 computerPlayCard();
                 noMatches = false;
-                System.out.println("Cards left in gameDeck: " + Hand.gameDeck.deckSize());
+                if (computer.getHand().isEmpty()) {
+                    winner = computer.getName();
+                    endGame();
+                }
                 break;
             }
 
@@ -224,8 +227,11 @@ public class Gameplay {
         }
     }
 
+    /*
+     * This method is used to play the computer player's card
+     */
+
     public static void computerPlayCard() {
-        Random rand = new Random();
         Player computer = playersList.get(1);
         int r = compChoice.getRank();         /* Reference to the rank of the card the player selected */
         int s = compChoice.getSuit();         /* Reference to the suit of the card the player selected */
@@ -233,7 +239,7 @@ public class Gameplay {
         int s1 = stockCard.getSuit();         /* Reference to the suit of the stock card*/
 
         if (r == 7) {
-            int wild = computerSuitCheck();            /* Use wildCard method */
+            int wild = computerSuitCheck();        /* Use wildCard method */
             Card eight = new Card(wild, r);        /* Create a new card using the wild value to change the suit to
                                                     * player's selection and the rank of 8 */
             discard.add(eight);                    /* Add the newly created card to the discard pile */
@@ -245,6 +251,12 @@ public class Gameplay {
             computer.getHand().remove(compChoice);
         }
     }
+
+    /*
+     * This method searches through the computer's hand to see which suit it has the most cards of.
+     * It then returns an int equal to that suit's value
+     */
+
     public static int computerSuitCheck() {
         Player computer = playersList.get(1);
         int clubs = 0;
@@ -264,41 +276,13 @@ public class Gameplay {
             }
         }
         int mostOf = Math.max(clubs, Math.max(diamonds, Math.max(hearts, spades)));
-        if (mostOf == clubs) mostOf = 0;
-        if (mostOf == diamonds) mostOf = 1;
-        if (mostOf == hearts) mostOf = 2;
-        if (mostOf == spades) mostOf = 3;
+
+        if (mostOf == clubs) {mostOf = 0;}
+        else if (mostOf == diamonds) {mostOf = 1;}
+        else if (mostOf == hearts) {mostOf = 2;}
+        else {mostOf = 3;}
         return mostOf;
     }
-
-//    public static int computerSuitCheck() {
-//        Player computer = playersList.get(1);
-//        int clubs = 0;
-//        int diamonds = 0;
-//        int hearts = 0;
-//        int spades = 0;
-//        for (int i = 0; i < computer.getHand().size(); i++) {
-//            if (computer.getHand().get(i).getSuit() == 0) {
-//                clubs++;
-//            }
-//            if (computer.getHand().get(i).getSuit() == 1) {
-//                diamonds++;
-//            }
-//            if (computer.getHand().get(i).getSuit() == 2) {
-//                hearts++;
-//            }
-//            if (computer.getHand().get(i).getSuit() == 3) {
-//                spades++;
-//            }
-//        }
-//        int mostOf = Math.max(clubs, Math.max(diamonds, Math.max(hearts, spades)));
-//        if (mostOf == clubs) mostOf = 0;
-//        if (mostOf == diamonds) mostOf = 1;
-//        if (mostOf == hearts) mostOf = 2;
-//        if (mostOf == spades) mostOf = 3;
-//
-//        return mostOf;
-//    }
 
     public static int wildCard() {
         Scanner in = new Scanner(System.in);
@@ -328,6 +312,10 @@ public class Gameplay {
         suitChange -= 1;
         return suitChange;
     }
+
+    /*
+     * Method to end game
+     */
 
     public static void endGame() {
         System.out.println(winner + " wins the game!");
